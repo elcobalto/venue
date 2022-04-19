@@ -7,6 +7,9 @@ from apps.venue.models import Venue
 
 
 class Show(models.Model):
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
+
     artist = models.ForeignKey(Artist, on_delete=models.CASCADE, related_name="shows")
     date = models.DateField()
     tour = models.CharField(max_length=256)
@@ -30,6 +33,9 @@ class Show(models.Model):
 
 
 class PerformedSong(models.Model):
+    created_at = models.DateField(auto_now_add=True)
+    updated_at = models.DateField(auto_now=True)
+
     name = models.CharField(max_length=256)
     original_song = models.ForeignKey(
         Song, on_delete=models.CASCADE, related_name="live_performances"
