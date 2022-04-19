@@ -1,6 +1,6 @@
-from django.db import models
 from datetime import datetime
-from apps.show.models import Show
+
+from django.db import models
 
 
 class Venue(models.Model):
@@ -11,8 +11,8 @@ class Venue(models.Model):
 
     def get_passed_shows(self):
         today = datetime.today()
-        return Show.objects.filter(venue_id=self.id, date__lte=today)
+        return self.shows.filter(venue_id=self.id, date__lte=today)
 
     def get_upcoming_shows(self):
         today = datetime.today()
-        return Show.objects.filter(venue_id=self.id, date__gte=today)
+        return self.shows.filter(venue_id=self.id, date__gte=today)

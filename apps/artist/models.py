@@ -1,6 +1,8 @@
-from django.db import models
 from datetime import datetime
-from apps.show.models import Show, PerformedSong
+
+from django.db import models
+
+from apps.artist.services import setlist_fm
 
 
 class Artist(models.Model):
@@ -13,25 +15,33 @@ class Artist(models.Model):
 
     def get_passed_shows(self):
         today = datetime.today()
-        return Show.objects.filter(artist_id=self.id, date__lte=today)
+        return self.shows.filter(artist_id=self.id, date__lte=today)
 
     def get_upcoming_shows(self):
         today = datetime.today()
-        return Show.objects.filter(artist_id=self.id, date__gte=today)
+        return self.shows.filter(artist_id=self.id, date__gte=today)
+
+    def get_setlist_fm_artist(self):
+        return setlist_fm.get_artist(self.mbid)
+
+    def get_setlist_fm_artist_setlists(self):
+        return setlist_fm.get_artist_setlists(self.mbid)
 
 
 class Release(models.Model):
-    artist = models.ForeignKey(Artist, on_delete=True, related_name="releases")
-    name = models.CharField(max_length=256, default='No release')
+    artist = models.ForeignKey(
+        Artist, on_delete=models.CASCADE, related_name="releases"
+    )
+    name = models.CharField(max_length=256, default="No release")
     release_date = models.DateField()
 
 
 class Song(models.Model):
     name = models.CharField(max_length=256)
-    release = models.ForeignKey(Release, on_delete=True, related_name="songs")
+    release = models.ForeignKey(Release, on_delete=models.CASCADE, related_name="songs")
 
     def get_artist(self):
         return self.release.artist
 
     def get_performances(self):
-        return PerformedSong.objects.filter(original_song=self.id)
+        return self.live_performances
